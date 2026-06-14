@@ -1,0 +1,109 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Rare Design System → shadcn/Tailwind Token Bridge
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * PURPOSE:
+ * Maps shadcn CSS variables to Rare design token equivalents so that all
+ * Tailwind utility classes (bg-secondary, border-input, text-foreground, etc.)
+ * automatically resolve to Rare design system values.
+ *
+ * HOW IT WORKS:
+ * shadcn variables are defined inside @layer base { :root { ... } } in globals.css.
+ * Un-layered CSS always overrides @layer base (CSS Cascade Layers spec).
+ * This file is un-layered, so these :root declarations win over shadcn defaults.
+ *
+ * FORMAT:
+ * shadcn/Tailwind expects raw HSL components (e.g., "240 10% 3.9%") — NOT
+ * full hsl() values or hex. Tailwind wraps them: hsl(var(--border)).
+ * Setting hex here would produce invalid hsl(#1c1c21). All values below
+ * are pre-computed HSL components from the Rare gray-iron palette.
+ *
+ * SOURCE OF TRUTH:
+ * - Rare tokens: styles/rare-tokens.css (Figma export, never modified here)
+ * - Mapping table below documents which rare token each shadcn var maps to
+ *
+ * ROLLBACK:
+ * Remove this file + its import in globals.css → everything falls back to
+ * shadcn zinc defaults. Zero side effects.
+ *
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── LIGHT THEME (default) ─────────────────────────────────────────────── */
+:root {
+  /* --background     ← rare-bg              = #ffffff                    */
+  --background: 0 0% 100%;
+
+  /* --foreground     ← rare-fg              = gray-900 #131316           */
+  --foreground: 240 7.3% 8%;
+
+  /* --card           ← rare-bg              = #ffffff                    */
+  --card: 0 0% 100%;
+  --card-foreground: 240 7.3% 8%;
+
+  /* --popover        ← rare-bg              = #ffffff                    */
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 7.3% 8%;
+
+  /* --secondary      ← rare-bg-secondary    = gray-50  #efeff1          */
+  --secondary: 240 6.7% 94.1%;
+  --secondary-foreground: 240 7.3% 8%;
+
+  /* --muted          ← rare-bg-secondary    = gray-50  #efeff1          */
+  --muted: 240 6.7% 94.1%;
+
+  /* --muted-foreground ← rare-fg-muted      = gray-500 #3b3b44          */
+  --muted-foreground: 240 7.1% 24.9%;
+
+  /* --accent         ← rare-bg-secondary    = gray-50  #efeff1          */
+  --accent: 240 6.7% 94.1%;
+  --accent-foreground: 240 7.3% 8%;
+
+  /* --border         ← rare-border          = gray-300 #888896          */
+  --border: 240 6.3% 56.1%;
+
+  /* --input          ← rare-border          = gray-300 #888896          */
+  --input: 240 6.3% 56.1%;
+
+  /* --ring           ← rare-brand-600       = #155eef                   */
+  --ring: 220 83.5% 51%;
+}
+
+/* ── DARK THEME ────────────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  /* --background     ← rare-bg              = gray-950 #09090b          */
+  --background: 240 10% 3.9%;
+
+  /* --foreground     ← rare-fg              = #ffffff                   */
+  --foreground: 0 0% 100%;
+
+  /* --card           ← rare-bg              = gray-950 #09090b          */
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 100%;
+
+  /* --popover        ← rare-bg-alt          = gray-900 #131316          */
+  --popover: 240 7.3% 8%;
+  --popover-foreground: 0 0% 100%;
+
+  /* --secondary      ← rare-bg-secondary    = gray-900 #131316          */
+  --secondary: 240 7.3% 8%;
+  --secondary-foreground: 0 0% 100%;
+
+  /* --muted          ← rare-bg-secondary    = gray-900 #131316          */
+  --muted: 240 7.3% 8%;
+
+  /* --muted-foreground ← rare-fg-muted      = gray-400 #6f6f7b          */
+  --muted-foreground: 240 5.1% 45.9%;
+
+  /* --accent         ← rare-bg-secondary    = gray-900 #131316          */
+  --accent: 240 7.3% 8%;
+  --accent-foreground: 0 0% 100%;
+
+  /* --border         ← rare-border          = gray-700 #25252c          */
+  --border: 240 8.6% 15.9%;
+
+  /* --input          ← rare-border          = gray-700 #25252c          */
+  --input: 240 8.6% 15.9%;
+
+  /* --ring           ← rare-brand-500       = #2970ff                   */
+  --ring: 220 100% 58%;
+}
