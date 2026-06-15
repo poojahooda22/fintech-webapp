@@ -1,9 +1,11 @@
 import Link from 'next/link'
 import { ArrowRight, FileText, Link2, LineChart, GraduationCap, type LucideIcon } from 'lucide-react'
 import { ResearchCard } from '@/components/dashboard/ResearchCard'
-import { INSIGHTS } from '@/lib/insights/insights'
+import { getInsights } from '@/lib/insights/data'
 import { INSIGHT_FRED } from '@/lib/sources/liveFred'
 import { slugifyTopic } from '@/lib/topics/topics'
+
+export const revalidate = 300
 
 interface Offer {
   readonly icon: LucideIcon
@@ -49,8 +51,9 @@ const HOME_TOPICS = [
   'Volatility',
 ]
 
-export default function Home() {
-  const latest = INSIGHTS.slice(0, 6)
+export default async function Home() {
+  const insights = await getInsights()
+  const latest = insights.slice(0, 6)
 
   return (
     <main className="max-w-page mx-auto px-xl py-5xl flex flex-col gap-6xl">
@@ -68,7 +71,7 @@ export default function Home() {
         <div className="flex flex-wrap items-center gap-lg pt-sm">
           <Link
             href="/global-research"
-            className="inline-flex items-center gap-sm h-10 px-xl rounded-md bg-background-brand-solid text-foreground-on-brand text-sm font-semibold hover:bg-background-brand-solid-hover transition-colors focus-visible:outline-none focus-visible:shadow-focus-ring-brand-xs"
+            className="inline-flex items-center gap-sm h-10 px-xl rounded-md bg-foreground text-background text-sm font-semibold hover:opacity-90 transition-colors focus-visible:outline-none focus-visible:shadow-focus-ring-brand-xs"
           >
             Explore Global Research
             <ArrowRight className="w-4 h-4 stroke-[1.8]" />
@@ -170,7 +173,7 @@ export default function Home() {
         </div>
         <Link
           href="/global-research"
-          className="inline-flex items-center gap-sm h-10 px-xl rounded-md bg-background-brand-solid text-foreground-on-brand text-sm font-semibold hover:bg-background-brand-solid-hover transition-colors focus-visible:outline-none focus-visible:shadow-focus-ring-brand-xs shrink-0"
+          className="inline-flex items-center gap-sm h-10 px-xl rounded-md bg-foreground text-background text-sm font-semibold hover:opacity-90 transition-colors focus-visible:outline-none focus-visible:shadow-focus-ring-brand-xs shrink-0"
         >
           Open Global Research
           <ArrowRight className="w-4 h-4 stroke-[1.8]" />

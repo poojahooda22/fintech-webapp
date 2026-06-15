@@ -7,12 +7,14 @@ import { Disclaimer } from '@/components/dashboard/Disclaimer'
 import { KeyTakeaways } from '@/components/dashboard/KeyTakeaways'
 import { SourcesList } from '@/components/dashboard/SourcesList'
 import { LiveSeriesBlock } from '@/components/dashboard/LiveSeriesBlock'
-import { getInsight, INSIGHTS } from '@/lib/insights/insights'
+import { getInsights, getInsightBySlug } from '@/lib/insights/data'
 import { getFredById } from '@/lib/sources/fred'
 import { INSIGHT_FRED } from '@/lib/sources/liveFred'
 
-export function generateStaticParams() {
-  return INSIGHTS.map((i) => ({ slug: i.slug }))
+export const revalidate = 300
+
+export async function generateStaticParams() {
+  return (await getInsights()).map((i) => ({ slug: i.slug }))
 }
 
 export async function generateMetadata({
@@ -21,7 +23,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const insight = getInsight(slug)
+  const insight = await getInsightBySlug(slug)
   return {
     title: insight ? `${insight.title} · Open Research` : 'Market Insight · Open Research',
     description: insight?.summary,
@@ -34,7 +36,7 @@ export default async function InsightPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const insight = getInsight(slug)
+  const insight = await getInsightBySlug(slug)
   if (!insight) notFound()
 
   const fredId = INSIGHT_FRED[insight.slug]

@@ -2,8 +2,11 @@ import type { Metadata } from 'next'
 import { Tabs, type TabItem } from '@/components/dashboard/Tabs'
 import { ResearchCard } from '@/components/dashboard/ResearchCard'
 import { Disclaimer } from '@/components/dashboard/Disclaimer'
-import { INSIGHT_CATEGORIES, insightsByCategory } from '@/lib/insights/insights'
+import { INSIGHT_CATEGORIES } from '@/lib/insights/insights'
+import { getInsights } from '@/lib/insights/data'
 import { INSIGHT_FRED } from '@/lib/sources/liveFred'
+
+export const revalidate = 300
 
 export const metadata: Metadata = {
   title: 'Market Insights · Open Research',
@@ -11,9 +14,10 @@ export const metadata: Metadata = {
     'Timely, cited reads on what is moving across markets, wealth, private capital, surveys, and the financial industry.',
 }
 
-export default function MarketInsightsPage() {
+export default async function MarketInsightsPage() {
+  const insights = await getInsights()
   const tabs: TabItem[] = INSIGHT_CATEGORIES.map((category) => {
-    const items = insightsByCategory(category)
+    const items = insights.filter((i) => i.category === category)
     return {
       id: category,
       label: category,

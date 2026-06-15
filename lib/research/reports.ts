@@ -892,10 +892,4 @@ export const REPORTS: readonly Report[] = [
   },
 ]
 
-export function getReport(slug: string): Report | undefined {
-  return REPORTS.find((r) => r.slug === slug)
-}
-
-export function reportsByCategory(category: ReportCategory): Report[] {
-  return REPORTS.filter((r) => r.category === category)
-}
+// Reads go through lib/research/data.ts (database first, this array as fallback).

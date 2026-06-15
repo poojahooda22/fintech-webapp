@@ -9,7 +9,7 @@ export type InsightCategory =
   | 'Surveys & Sentiment'
   | 'Risk & Regulation'
   | 'Workplace & Benefits'
-  | 'Industry & Fintech'
+  | 'Industry'
 
 export interface Insight {
   readonly slug: string
@@ -33,7 +33,7 @@ export const INSIGHT_CATEGORIES: readonly InsightCategory[] = [
   'Surveys & Sentiment',
   'Risk & Regulation',
   'Workplace & Benefits',
-  'Industry & Fintech',
+  'Industry',
 ]
 
 export const INSIGHTS: readonly Insight[] = [
@@ -703,7 +703,7 @@ export const INSIGHTS: readonly Insight[] = [
   },
   {
     slug: "fintech-funding-rebound-ai-ipo-window-2025-2026",
-    category: "Industry & Fintech",
+    category: "Industry",
     title: "Fintech funding finally turned in 2025, but the money is going to fewer, later, AI-heavy bets",
     summary: "After three down years, 2025 fintech investment rebounded to roughly $116B as capital concentrated in mega-rounds, AI startups, and a reopened IPO window led by Chime, Circle, and Klarna.",
     keyPoints: [
@@ -731,7 +731,7 @@ export const INSIGHTS: readonly Insight[] = [
   },
   {
     slug: "agentic-commerce-payments-rails-2026",
-    category: "Industry & Fintech",
+    category: "Industry",
     title: "The card networks just built payment rails for AI agents, and 2026 is the year they go live",
     summary: "Visa, Mastercard, PayPal, and Google have shipped competing protocols that let verified AI agents transact on a user's behalf, turning agentic commerce from a demo into regulated, live infrastructure.",
     keyPoints: [
@@ -759,7 +759,7 @@ export const INSIGHTS: readonly Insight[] = [
   },
   {
     slug: "stablecoins-tokenization-institutional-rails-2026",
-    category: "Industry & Fintech",
+    category: "Industry",
     title: "Stablecoins and tokenized assets cross into the regulated core, with banks and BlackRock leading",
     summary: "Stablecoin supply pushed past $320B and tokenized real-world assets doubled to ~$34.5B in 2026 as US legislation, bank consortiums, and BlackRock's BUIDL moved on-chain settlement from crypto-native to institutional infrastructure.",
     keyPoints: [
@@ -788,10 +788,4 @@ export const INSIGHTS: readonly Insight[] = [
   },
 ]
 
-export function getInsight(slug: string): Insight | undefined {
-  return INSIGHTS.find((i) => i.slug === slug)
-}
-
-export function insightsByCategory(category: InsightCategory): Insight[] {
-  return INSIGHTS.filter((i) => i.category === category)
-}
+// Reads go through lib/insights/data.ts (database first, this array as fallback).

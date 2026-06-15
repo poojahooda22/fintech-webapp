@@ -1,5 +1,5 @@
-import { REPORTS, type Report } from '@/lib/research/reports'
-import { INSIGHTS, type Insight } from '@/lib/insights/insights'
+import { type Report } from '@/lib/research/reports'
+import { type Insight } from '@/lib/insights/insights'
 
 // Cross-cutting topic library, modeled on the Morgan Stanley "View More Topics"
 // tree plus our own themes. Topics are a tagging layer over every piece of
@@ -158,14 +158,22 @@ export interface TopicMatches {
   readonly insights: readonly Insight[]
 }
 
-export function getTopicMatches(topic: string): TopicMatches {
+export function getTopicMatches(
+  topic: string,
+  reports: readonly Report[],
+  insights: readonly Insight[],
+): TopicMatches {
   return {
-    reports: REPORTS.filter((r) => topicsForText(reportText(r)).includes(topic)),
-    insights: INSIGHTS.filter((i) => topicsForText(insightText(i)).includes(topic)),
+    reports: reports.filter((r) => topicsForText(reportText(r)).includes(topic)),
+    insights: insights.filter((i) => topicsForText(insightText(i)).includes(topic)),
   }
 }
 
-export function topicCount(topic: string): number {
-  const m = getTopicMatches(topic)
+export function topicCount(
+  topic: string,
+  reports: readonly Report[],
+  insights: readonly Insight[],
+): number {
+  const m = getTopicMatches(topic, reports, insights)
   return m.reports.length + m.insights.length
 }

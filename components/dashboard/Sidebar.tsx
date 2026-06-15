@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, LineChart, Newspaper, LayoutGrid, type LucideIcon } from 'lucide-react'
+import { Home, LineChart, Newspaper, LayoutGrid, Sparkles, type LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface NavItem {
@@ -16,6 +16,7 @@ const NAV: readonly NavItem[] = [
   { href: '/global-research', label: 'Global Research', icon: LineChart },
   { href: '/market-insights', label: 'Market Insights', icon: Newspaper },
   { href: '/topics', label: 'Topics', icon: LayoutGrid },
+  { href: '/ask', label: 'Ask AI', icon: Sparkles },
 ]
 
 export function Sidebar() {

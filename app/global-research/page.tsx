@@ -1,8 +1,11 @@
 import type { Metadata } from 'next'
 import { Tabs, type TabItem } from '@/components/dashboard/Tabs'
 import { ResearchCard } from '@/components/dashboard/ResearchCard'
-import { CATEGORIES, reportsByCategory } from '@/lib/research/reports'
+import { CATEGORIES } from '@/lib/research/reports'
+import { getReports } from '@/lib/research/data'
 import { REPORT_FRED } from '@/lib/sources/liveFred'
+
+export const revalidate = 300
 
 export const metadata: Metadata = {
   title: 'Global Research — Open Research',
@@ -10,13 +13,16 @@ export const metadata: Metadata = {
     'Deep, analyst-grade research across every asset class, rebuilt from open data and elite academic sources. Every number links to its source.',
 }
 
-export default function GlobalResearchPage() {
+export default async function GlobalResearchPage() {
+  const reports = await getReports()
   const researchTabs: TabItem[] = CATEGORIES.map((category) => ({
     id: category,
     label: category,
     content: (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl">
-        {reportsByCategory(category).map((r) => (
+        {reports
+          .filter((r) => r.category === category)
+          .map((r) => (
           <ResearchCard
             key={r.slug}
             slug={r.slug}

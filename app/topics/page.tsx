@@ -1,6 +1,10 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { TOPIC_GROUPS, slugifyTopic, topicCount } from '@/lib/topics/topics'
+import { getReports } from '@/lib/research/data'
+import { getInsights } from '@/lib/insights/data'
+
+export const revalidate = 300
 
 export const metadata: Metadata = {
   title: 'Topics · Open Research',
@@ -8,7 +12,8 @@ export const metadata: Metadata = {
     'Browse research and live insights by topic, across markets, the economy, sectors, regions, and themes.',
 }
 
-export default function TopicsPage() {
+export default async function TopicsPage() {
+  const [reports, insights] = await Promise.all([getReports(), getInsights()])
   return (
     <main className="max-w-page mx-auto px-xl py-4xl flex flex-col gap-3xl">
       <section className="flex flex-col gap-sm">
@@ -25,7 +30,7 @@ export default function TopicsPage() {
             <h2 className="text-base font-semibold text-foreground">{g.group}</h2>
             <div className="flex flex-wrap gap-sm">
               {g.topics.map((t) => {
-                const count = topicCount(t)
+                const count = topicCount(t, reports, insights)
                 return (
                   <Link
                     key={t}

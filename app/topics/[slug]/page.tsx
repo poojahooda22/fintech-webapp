@@ -5,7 +5,11 @@ import { ArrowLeft } from 'lucide-react'
 import { ResearchCard } from '@/components/dashboard/ResearchCard'
 import { Disclaimer } from '@/components/dashboard/Disclaimer'
 import { ALL_TOPICS, slugifyTopic, topicFromSlug, getTopicMatches } from '@/lib/topics/topics'
+import { getReports } from '@/lib/research/data'
+import { getInsights } from '@/lib/insights/data'
 import { REPORT_FRED, INSIGHT_FRED } from '@/lib/sources/liveFred'
+
+export const revalidate = 300
 
 export function generateStaticParams() {
   return ALL_TOPICS.map((t) => ({ slug: slugifyTopic(t) }))
@@ -33,7 +37,8 @@ export default async function TopicPage({
   const topic = topicFromSlug(slug)
   if (!topic) notFound()
 
-  const { reports, insights } = getTopicMatches(topic)
+  const [allReports, allInsights] = await Promise.all([getReports(), getInsights()])
+  const { reports, insights } = getTopicMatches(topic, allReports, allInsights)
   const total = reports.length + insights.length
 
   return (

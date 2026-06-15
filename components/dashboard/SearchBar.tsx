@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, X } from 'lucide-react'
 import { searchReports } from '@/lib/research/search'
+import { REPORTS } from '@/lib/research/reports'
 import { Badge } from '@/components/ui/Badge'
 import { cn } from '@/lib/utils'
 
@@ -21,7 +22,7 @@ export function SearchBar() {
     return () => clearTimeout(t)
   }, [query])
 
-  const results = useMemo(() => searchReports(debounced, 8), [debounced])
+  const results = useMemo(() => searchReports(debounced, REPORTS, 8), [debounced])
 
   useEffect(() => {
     setActiveIdx(0)

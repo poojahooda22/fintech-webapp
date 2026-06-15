@@ -3,6 +3,7 @@ import { DM_Sans, DM_Mono } from 'next/font/google'
 import './globals.css'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { TopBar } from '@/components/dashboard/TopBar'
+import { AskWidget } from '@/components/ask/AskWidget'
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -50,6 +51,7 @@ export default function RootLayout({
             {children}
           </div>
         </div>
+        <AskWidget />
       </body>
     </html>
   )

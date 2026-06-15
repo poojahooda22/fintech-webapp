@@ -1,4 +1,4 @@
-import { REPORTS, type Report } from './reports'
+import { type Report } from './reports'
 
 export interface SearchHit {
   readonly report: Report
@@ -44,13 +44,17 @@ function snippetFor(r: Report, token: string): string {
  * appear somewhere (AND semantics), and the score sums the field weight of each
  * term's strongest field hit, so title and category matches float to the top.
  */
-export function searchReports(query: string, limit = 8): SearchHit[] {
+export function searchReports(
+  query: string,
+  reports: readonly Report[],
+  limit = 8,
+): SearchHit[] {
   const q = query.trim().toLowerCase()
   if (!q) return []
   const tokens = q.split(/\s+/).filter(Boolean)
 
   const hits: SearchHit[] = []
-  for (const r of REPORTS) {
+  for (const r of reports) {
     const fs = fields(r).map((f) => ({ weight: f.weight, lower: f.text.toLowerCase() }))
     let score = 0
     let allMatched = true

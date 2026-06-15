@@ -8,7 +8,7 @@ import { Disclaimer } from '@/components/dashboard/Disclaimer'
 import { KeyTakeaways } from '@/components/dashboard/KeyTakeaways'
 import { SourcesList } from '@/components/dashboard/SourcesList'
 import { LiveSeriesBlock } from '@/components/dashboard/LiveSeriesBlock'
-import { getReport, REPORTS } from '@/lib/research/reports'
+import { getReports, getReportBySlug } from '@/lib/research/data'
 import { getUsdFx, type FxResult } from '@/lib/sources/frankfurter'
 import { getPublicDebt, type DebtResult } from '@/lib/sources/treasury'
 import { getFredById } from '@/lib/sources/fred'
@@ -16,8 +16,10 @@ import { REPORT_FRED } from '@/lib/sources/liveFred'
 import { fmtNum, fmtSignedPct, fmtUsdTrillions } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
-export function generateStaticParams() {
-  return REPORTS.map((r) => ({ slug: r.slug }))
+export const revalidate = 300
+
+export async function generateStaticParams() {
+  return (await getReports()).map((r) => ({ slug: r.slug }))
 }
 
 export async function generateMetadata({
@@ -26,7 +28,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const report = getReport(slug)
+  const report = await getReportBySlug(slug)
   return {
     title: report ? `${report.title} — Open Research` : 'Report — Open Research',
     description: report?.summary,
@@ -101,7 +103,7 @@ export default async function ReportPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const report = getReport(slug)
+  const report = await getReportBySlug(slug)
   if (!report) notFound()
 
   const fx = report.live === 'fx' ? await getUsdFx() : null
