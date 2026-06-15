@@ -93,7 +93,7 @@ export default async function Home() {
       <TopBar />
       <main className="max-w-page mx-auto px-xl py-5xl flex flex-col gap-5xl">
         <section className="flex flex-col gap-sm">
-          <h1 className="font-display text-display-md font-semibold text-foreground tracking-tight">
+          <h1 className="text-display-md font-semibold text-foreground tracking-tight">
             The world of markets, open to everyone
           </h1>
           <p className="text-sm text-foreground-secondary max-w-width-xl">
@@ -116,9 +116,9 @@ export default async function Home() {
                 Deep, analyst-grade research across asset classes. Click any report to read it.
               </p>
             </div>
-            <span className="hidden sm:inline-flex text-xxs text-foreground-muted whitespace-nowrap">
+            {/* <span className="hidden sm:inline-flex text-xxs text-foreground-muted whitespace-nowrap">
               Cited. Neutral. Open.
-            </span>
+            </span> */}
           </div>
           <Tabs tabs={researchTabs} />
         </section>

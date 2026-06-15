@@ -122,7 +122,7 @@ export default async function ReportPage({
 
         <header className="flex flex-col gap-md">
           <Badge variant="brand">{report.category}</Badge>
-          <h1 className="font-display text-display-sm font-semibold text-foreground tracking-tight">
+          <h1 className="text-display-sm font-semibold text-foreground tracking-tight">
             {report.title}
           </h1>
           <p className="text-sm text-foreground-secondary leading-relaxed">{report.summary}</p>

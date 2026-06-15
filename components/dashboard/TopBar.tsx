@@ -1,5 +1,6 @@
-import { Bell, Search } from 'lucide-react'
+import { Bell } from 'lucide-react'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { SearchBar } from '@/components/dashboard/SearchBar'
 
 export function TopBar() {
   return (
@@ -14,10 +15,7 @@ export function TopBar() {
           </span>
         </div>
 
-        <div className="hidden md:flex flex-1 max-w-width-sm items-center gap-sm h-8 px-md rounded-md border border-primary bg-background-secondary text-foreground-muted">
-          <Search className="w-4 h-4 stroke-[1.6]" />
-          <span className="text-xs">Search companies, sectors, research...</span>
-        </div>
+        <SearchBar />
 
         <div className="flex items-center gap-md shrink-0">
           <button

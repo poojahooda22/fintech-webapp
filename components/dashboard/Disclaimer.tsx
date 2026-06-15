@@ -2,7 +2,7 @@
 // generated report.
 export function Disclaimer() {
   return (
-    <p className="text-xxs text-foreground-muted leading-relaxed">
+    <p className="text-xs text-foreground-muted leading-relaxed">
       Educational information rebuilt from open data and public research. Not
       investment advice, and not a recommendation to buy or sell anything. Every
       figure links to its open source.

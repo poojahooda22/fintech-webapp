@@ -33,8 +33,8 @@ export function ResearchCard({
         <h3 className="text-sm font-semibold text-foreground leading-snug">{title}</h3>
         <p className="text-xs text-foreground-secondary leading-relaxed">{summary}</p>
         <div className="flex items-center justify-between mt-auto pt-md border-t border-primary">
-          <span className="text-xxs text-foreground-muted">source: {source}</span>
-          <span className="text-xxs text-foreground-muted whitespace-nowrap">{date}</span>
+          <span className="text-xs text-foreground-muted">source: {source}</span>
+          <span className="text-xs text-foreground-muted whitespace-nowrap">{date}</span>
         </div>
       </Card>
     </Link>
