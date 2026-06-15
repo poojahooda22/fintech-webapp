@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { DM_Sans, DM_Mono } from 'next/font/google'
 import './globals.css'
+import { Sidebar } from '@/components/dashboard/Sidebar'
+import { TopBar } from '@/components/dashboard/TopBar'
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -41,7 +43,13 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="min-h-screen bg-background text-foreground font-sans antialiased">
-        {children}
+        <div className="flex min-h-screen">
+          <Sidebar />
+          <div className="flex-1 min-w-0 flex flex-col">
+            <TopBar />
+            {children}
+          </div>
+        </div>
       </body>
     </html>
   )

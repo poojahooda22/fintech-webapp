@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, ExternalLink } from 'lucide-react'
-import { TopBar } from '@/components/dashboard/TopBar'
 import { Badge } from '@/components/ui/Badge'
 import { AreaChart } from '@/components/dashboard/AreaChart'
 import { ProvenanceLine } from '@/components/dashboard/Provenance'
@@ -110,14 +109,12 @@ export default async function ReportPage({
   const liveRequestedButMissing = Boolean(report.live) && !fx && !debt
 
   return (
-    <div className="min-h-screen bg-background">
-      <TopBar />
-      <main className="max-w-page-narrow mx-auto px-xl py-5xl flex flex-col gap-4xl">
+    <main className="max-w-page-narrow mx-auto px-xl py-5xl flex flex-col gap-4xl">
         <Link
-          href="/"
+          href="/global-research"
           className="inline-flex items-center gap-xs text-xs text-foreground-secondary hover:text-foreground transition-colors w-fit"
         >
-          <ArrowLeft className="w-4 h-4 stroke-[1.6]" /> Back to dashboard
+          <ArrowLeft className="w-4 h-4 stroke-[1.6]" /> Back to Global Research
         </Link>
 
         <header className="flex flex-col gap-md">
@@ -195,7 +192,6 @@ export default async function ReportPage({
           <span className="text-xxs text-foreground-muted">Primary source: {report.source}</span>
           <Disclaimer />
         </footer>
-      </main>
-    </div>
+    </main>
   )
 }

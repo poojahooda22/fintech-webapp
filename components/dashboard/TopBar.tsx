@@ -6,15 +6,6 @@ export function TopBar() {
   return (
     <header className="sticky top-0 z-30 h-14 border-b border-primary bg-background-header-surface">
       <div className="h-full max-w-page mx-auto px-xl flex items-center justify-between gap-xl">
-        <div className="flex items-center gap-md shrink-0">
-          <div className="w-7 h-7 rounded-md bg-background-brand-solid flex items-center justify-center">
-            <span className="text-foreground-on-brand text-sm font-bold">O</span>
-          </div>
-          <span className="font-display text-base font-semibold text-foreground tracking-tight">
-            Open Research
-          </span>
-        </div>
-
         <SearchBar />
 
         <div className="flex items-center gap-md shrink-0">
