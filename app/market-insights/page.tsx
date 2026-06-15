@@ -1,12 +1,45 @@
 import type { Metadata } from 'next'
-import { Newspaper } from 'lucide-react'
+import { Tabs, type TabItem } from '@/components/dashboard/Tabs'
+import { ResearchCard } from '@/components/dashboard/ResearchCard'
+import { Disclaimer } from '@/components/dashboard/Disclaimer'
+import { INSIGHT_CATEGORIES, insightsByCategory } from '@/lib/insights/insights'
 
 export const metadata: Metadata = {
-  title: 'Market Insights — Open Research',
-  description: 'Real-time, data-driven market insights. Coming soon.',
+  title: 'Market Insights · Open Research',
+  description:
+    'Timely, cited reads on what is moving across markets, wealth, private capital, surveys, and the financial industry.',
 }
 
 export default function MarketInsightsPage() {
+  const tabs: TabItem[] = INSIGHT_CATEGORIES.map((category) => {
+    const items = insightsByCategory(category)
+    return {
+      id: category,
+      label: category,
+      content:
+        items.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl">
+            {items.map((i) => (
+              <ResearchCard
+                key={i.slug}
+                href={`/insights/${i.slug}`}
+                slug={i.slug}
+                category={i.category}
+                title={i.title}
+                summary={i.summary}
+                source={i.source}
+                date={i.date}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-foreground-muted">
+            Fresh insights for this topic are being compiled.
+          </p>
+        ),
+    }
+  })
+
   return (
     <main className="max-w-page mx-auto px-xl py-4xl flex flex-col gap-3xl">
       <section className="flex flex-col gap-sm">
@@ -14,21 +47,13 @@ export default function MarketInsightsPage() {
           Market Insights
         </h1>
         <p className="text-sm text-foreground-secondary max-w-width-xl">
-          Real-time reads on liquidity, market structure, sentiment, and policy shifts, delivered as
-          short, data-driven notes. This is the next surface we build.
+          Timely, cited reads on what is moving across markets, wealth, private capital, surveys, and
+          the financial industry. Shorter and faster than Global Research, and every note links to
+          its source.
         </p>
       </section>
 
-      <div className="rounded-xl border border-primary bg-background-secondary px-xl py-5xl flex flex-col items-center gap-md text-center">
-        <span className="w-12 h-12 rounded-full bg-background-active flex items-center justify-center">
-          <Newspaper className="w-5 h-5 stroke-[1.6] text-foreground-secondary" />
-        </span>
-        <span className="text-base font-semibold text-foreground">In the works</span>
-        <p className="text-xs text-foreground-muted max-w-width-sm">
-          Global Research is live now. Market Insights builds on the same open data and citation
-          discipline, focused on what is moving today rather than the standing analysis.
-        </p>
-      </div>
+      <Tabs tabs={tabs} />
     </main>
   )
 }

@@ -119,6 +119,15 @@ input[type="number"] {
   height: 0 !important;
 }
 
+/* Horizontal strips (tab rows): scrollable, but no visible scrollbar chrome */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* View Transitions: the theme toggle's circular reveal */
 ::view-transition-old(root),
 ::view-transition-new(root) {

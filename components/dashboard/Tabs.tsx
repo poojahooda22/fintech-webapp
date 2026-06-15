@@ -23,11 +23,13 @@ export function Tabs({
 }) {
   const [active, setActive] = useState(tabs[0]?.id)
   const current = tabs.find((t) => t.id === active) ?? tabs[0]
+  // Unique per Tabs instance so the underline glides between this row's tabs
+  // and never collides with another Tabs on the page.
   const indicatorId = useId()
 
   return (
     <div className={className}>
-      <div className="flex items-center gap-xs border-b border-primary overflow-x-auto overflow-y-hidden">
+      <div className="relative flex items-center gap-xs border-b border-primary overflow-x-auto no-scrollbar">
         {tabs.map((tab) => {
           const on = tab.id === active
           return (
@@ -36,19 +38,19 @@ export function Tabs({
               type="button"
               onClick={() => setActive(tab.id)}
               className={cn(
-                'relative h-9 px-lg -mb-px text-sm whitespace-nowrap cursor-pointer',
+                'relative h-9 px-lg text-sm whitespace-nowrap cursor-pointer',
                 'transition-colors duration-200 focus-visible:outline-none',
                 on
                   ? 'text-foreground font-semibold'
                   : 'text-foreground-muted hover:text-foreground-secondary font-medium',
               )}
             >
-              {tab.label}
+              <span className="relative z-10">{tab.label}</span>
               {on && (
                 <motion.span
                   layoutId={`tab-underline-${indicatorId}`}
                   transition={MORPH_SPRING}
-                  className="absolute inset-x-0 -bottom-px h-0.5 bg-foreground"
+                  className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-foreground"
                 />
               )}
             </button>

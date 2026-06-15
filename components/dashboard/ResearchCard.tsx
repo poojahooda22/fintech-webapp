@@ -10,6 +10,8 @@ export interface ResearchCardProps {
   readonly summary: string
   readonly source: string
   readonly date: string
+  /** Destination for the card. Defaults to the Global Research report route. */
+  readonly href?: string
 }
 
 export function ResearchCard({
@@ -19,10 +21,11 @@ export function ResearchCard({
   summary,
   source,
   date,
+  href,
 }: ResearchCardProps) {
   return (
     <Link
-      href={`/research/${slug}`}
+      href={href ?? `/research/${slug}`}
       className="block rounded-xl focus-visible:outline-none focus-visible:shadow-focus-ring-brand"
     >
       <Card className="group h-full p-xl flex flex-col gap-md hover:bg-background-secondary-hover transition-colors duration-200">

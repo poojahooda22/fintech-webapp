@@ -1,10 +1,12 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { AreaChart } from '@/components/dashboard/AreaChart'
 import { ProvenanceLine } from '@/components/dashboard/Provenance'
 import { Disclaimer } from '@/components/dashboard/Disclaimer'
+import { KeyTakeaways } from '@/components/dashboard/KeyTakeaways'
+import { SourcesList } from '@/components/dashboard/SourcesList'
 import { getReport, REPORTS } from '@/lib/research/reports'
 import { getUsdFx, type FxResult } from '@/lib/sources/frankfurter'
 import { getPublicDebt, type DebtResult } from '@/lib/sources/treasury'
@@ -133,21 +135,7 @@ export default async function ReportPage({
           </p>
         )}
 
-        {report.keyPoints && report.keyPoints.length > 0 && (
-          <section className="rounded-xl border border-primary bg-background-secondary p-xl flex flex-col gap-md">
-            <span className="text-xs font-semibold text-foreground uppercase tracking-wide">
-              Key takeaways
-            </span>
-            <ul className="flex flex-col gap-sm">
-              {report.keyPoints.map((point) => (
-                <li key={point.slice(0, 32)} className="flex gap-md text-sm text-foreground-secondary leading-relaxed">
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground-brand" />
-                  <span>{point}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+        {report.keyPoints && <KeyTakeaways points={report.keyPoints} />}
 
         <article className="flex flex-col gap-xl">
           {report.body.map((para) => (
@@ -157,36 +145,7 @@ export default async function ReportPage({
           ))}
         </article>
 
-        {report.sources && report.sources.length > 0 && (
-          <section className="flex flex-col gap-md">
-            <span className="text-xs font-semibold text-foreground uppercase tracking-wide">
-              Sources and further reading
-            </span>
-            <ul className="flex flex-col gap-sm">
-              {report.sources.map((s) => (
-                <li key={s.url}>
-                  <a
-                    href={s.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex items-start gap-md rounded-lg border border-primary bg-background-secondary px-lg py-md hover:bg-background-secondary-hover transition-colors"
-                  >
-                    <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 stroke-[1.6] text-foreground-muted group-hover:text-foreground-brand transition-colors" />
-                    <span className="flex flex-col gap-xxs min-w-0">
-                      <span className="text-sm text-foreground group-hover:text-foreground-brand transition-colors leading-snug">
-                        {s.title}
-                      </span>
-                      <span className="text-xxs text-foreground-muted truncate">
-                        {s.publisher}
-                        {s.date ? ` · ${s.date}` : ''}
-                      </span>
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+        {report.sources && <SourcesList sources={report.sources} />}
 
         <footer className="flex flex-col gap-md pt-xl border-t border-primary">
           <span className="text-xxs text-foreground-muted">Primary source: {report.source}</span>
