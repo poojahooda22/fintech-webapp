@@ -7,9 +7,12 @@ import { ProvenanceLine } from '@/components/dashboard/Provenance'
 import { Disclaimer } from '@/components/dashboard/Disclaimer'
 import { KeyTakeaways } from '@/components/dashboard/KeyTakeaways'
 import { SourcesList } from '@/components/dashboard/SourcesList'
+import { LiveSeriesBlock } from '@/components/dashboard/LiveSeriesBlock'
 import { getReport, REPORTS } from '@/lib/research/reports'
 import { getUsdFx, type FxResult } from '@/lib/sources/frankfurter'
 import { getPublicDebt, type DebtResult } from '@/lib/sources/treasury'
+import { getFredById } from '@/lib/sources/fred'
+import { REPORT_FRED } from '@/lib/sources/liveFred'
 import { fmtNum, fmtSignedPct, fmtUsdTrillions } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
@@ -66,12 +69,7 @@ function FxBlock({ fx }: { readonly fx: FxResult }) {
           </div>
         </div>
       </div>
-      <AreaChart
-        points={fx.strengthSeries}
-        id="fx"
-        className="h-32"
-        colorClass={up ? 'text-foreground-success' : 'text-foreground-error'}
-      />
+      <AreaChart points={fx.strengthSeries} id="fx" className="h-32" />
       <ProvenanceLine {...fx.provenance} />
     </section>
   )
@@ -91,7 +89,7 @@ function DebtBlock({ debt }: { readonly debt: DebtResult }) {
           </span>
         )}
       </div>
-      <AreaChart points={debt.series} id="debt" className="h-32" colorClass="text-foreground-brand" />
+      <AreaChart points={debt.series} id="debt" className="h-32" />
       <ProvenanceLine {...debt.provenance} />
     </section>
   )
@@ -108,7 +106,10 @@ export default async function ReportPage({
 
   const fx = report.live === 'fx' ? await getUsdFx() : null
   const debt = report.live === 'debt' ? await getPublicDebt() : null
-  const liveRequestedButMissing = Boolean(report.live) && !fx && !debt
+  const fredId = REPORT_FRED[report.slug]
+  const fred = fredId ? await getFredById(fredId) : null
+  const liveRequestedButMissing =
+    (Boolean(report.live) || Boolean(fredId)) && !fx && !debt && !fred
 
   return (
     <main className="max-w-page-narrow mx-auto px-xl py-5xl flex flex-col gap-4xl">
@@ -129,6 +130,7 @@ export default async function ReportPage({
 
         {fx && <FxBlock fx={fx} />}
         {debt && <DebtBlock debt={debt} />}
+        {fred && <LiveSeriesBlock data={fred} />}
         {liveRequestedButMissing && (
           <p className="text-xs text-foreground-muted">
             Live data is temporarily unavailable right now. The analysis below stands on its own.

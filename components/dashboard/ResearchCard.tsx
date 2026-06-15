@@ -12,6 +12,8 @@ export interface ResearchCardProps {
   readonly date: string
   /** Destination for the card. Defaults to the Global Research report route. */
   readonly href?: string
+  /** Show a pulsing "Live" indicator instead of the date when this page has a live chart. */
+  readonly live?: boolean
 }
 
 export function ResearchCard({
@@ -22,6 +24,7 @@ export function ResearchCard({
   source,
   date,
   href,
+  live,
 }: ResearchCardProps) {
   return (
     <Link
@@ -35,9 +38,16 @@ export function ResearchCard({
         </div>
         <h3 className="text-sm font-semibold text-foreground leading-snug">{title}</h3>
         <p className="text-xs text-foreground-secondary leading-relaxed">{summary}</p>
-        <div className="flex items-center justify-between mt-auto pt-md border-t border-primary">
-          <span className="text-xs text-foreground-muted">source: {source}</span>
-          <span className="text-xs text-foreground-muted whitespace-nowrap">{date}</span>
+        <div className="flex items-center justify-between gap-md mt-auto pt-md border-t border-primary">
+          <span className="text-xs text-foreground-muted truncate">source: {source}</span>
+          {live ? (
+            <span className="inline-flex items-center gap-xs text-xs font-medium text-foreground-success whitespace-nowrap">
+              <span className="h-1.5 w-1.5 rounded-full bg-foreground-success animate-pulse" />
+              Live
+            </span>
+          ) : (
+            <span className="text-xs text-foreground-muted whitespace-nowrap">{date}</span>
+          )}
         </div>
       </Card>
     </Link>

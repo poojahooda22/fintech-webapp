@@ -1,6 +1,9 @@
 import Link from 'next/link'
 import { ArrowRight, FileText, Link2, LineChart, GraduationCap, type LucideIcon } from 'lucide-react'
-import { CATEGORIES } from '@/lib/research/reports'
+import { ResearchCard } from '@/components/dashboard/ResearchCard'
+import { INSIGHTS } from '@/lib/insights/insights'
+import { INSIGHT_FRED } from '@/lib/sources/liveFred'
+import { slugifyTopic } from '@/lib/topics/topics'
 
 interface Offer {
   readonly icon: LucideIcon
@@ -31,7 +34,24 @@ const OFFERS: readonly Offer[] = [
   },
 ]
 
+const HOME_TOPICS = [
+  'Inflation',
+  'Interest Rates',
+  'Artificial Intelligence',
+  'Real Estate',
+  'Digital Assets',
+  'Private Markets',
+  'China',
+  'India',
+  'Energy',
+  'Market Structure',
+  'Wealth Management',
+  'Volatility',
+]
+
 export default function Home() {
+  const latest = INSIGHTS.slice(0, 6)
+
   return (
     <main className="max-w-page mx-auto px-xl py-5xl flex flex-col gap-6xl">
       <section className="flex flex-col gap-xl max-w-width-xl">
@@ -59,26 +79,59 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-xl">
-        <div className="rounded-xl border border-primary bg-background-secondary p-2xl flex flex-col gap-md">
-          <span className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-            The problem
-          </span>
-          <h2 className="text-lg font-semibold text-foreground">Top-tier research is locked away</h2>
-          <p className="text-sm text-foreground-secondary leading-relaxed">
-            The best market research sits behind bank logins and paywalls, priced for institutions.
-            Individual investors get the headline, almost never the analysis behind it.
-          </p>
+      <section className="flex flex-col gap-xl">
+        <div className="flex items-end justify-between gap-xl">
+          <div className="flex flex-col gap-xxs">
+            <h2 className="text-xl font-semibold text-foreground">Latest from the desk</h2>
+            <p className="text-sm text-foreground-muted">
+              The freshest cited reads across markets and the financial industry.
+            </p>
+          </div>
+          <Link
+            href="/market-insights"
+            className="hidden sm:inline-flex items-center gap-xs text-xs text-foreground-brand hover:underline whitespace-nowrap"
+          >
+            See all
+            <ArrowRight className="w-3.5 h-3.5 stroke-[1.8]" />
+          </Link>
         </div>
-        <div className="rounded-xl border border-primary bg-background-secondary p-2xl flex flex-col gap-md">
-          <span className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-            The gap
-          </span>
-          <h2 className="text-lg font-semibold text-foreground">The raw data is open, but scattered</h2>
-          <p className="text-sm text-foreground-secondary leading-relaxed">
-            Central banks, regulators, the IMF, and universities publish a vast amount of open data
-            and research. It is fragmented, technical, and never assembled into a view you can read.
-          </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl">
+          {latest.map((i) => (
+            <ResearchCard
+              key={i.slug}
+              href={`/insights/${i.slug}`}
+              slug={i.slug}
+              category={i.category}
+              title={i.title}
+              summary={i.summary}
+              source={i.source}
+              date={i.date}
+              live={Boolean(INSIGHT_FRED[i.slug])}
+            />
+          ))}
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-lg">
+        <div className="flex items-end justify-between gap-xl">
+          <h2 className="text-xl font-semibold text-foreground">Browse by topic</h2>
+          <Link
+            href="/topics"
+            className="text-xs text-foreground-brand hover:underline whitespace-nowrap"
+          >
+            View all topics
+          </Link>
+        </div>
+        <div className="flex flex-wrap gap-sm">
+          {HOME_TOPICS.map((t) => (
+            <Link
+              key={t}
+              href={`/topics/${slugifyTopic(t)}`}
+              className="inline-flex items-center h-8 px-md rounded-full border border-primary bg-background-secondary text-xs text-foreground-secondary hover:bg-background-secondary-hover hover:text-foreground transition-colors focus-visible:outline-none focus-visible:shadow-focus-ring-brand-xs"
+            >
+              {t}
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -86,7 +139,7 @@ export default function Home() {
         <div className="flex flex-col gap-xxs">
           <h2 className="text-xl font-semibold text-foreground">What this platform does</h2>
           <p className="text-sm text-foreground-muted">
-            We close that gap. The depth of a bank desk, built on sources you can open yourself.
+            The depth of a bank desk, built on sources you can open yourself.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-xl">
@@ -105,20 +158,6 @@ export default function Home() {
               </div>
             )
           })}
-        </div>
-      </section>
-
-      <section className="flex flex-col gap-lg">
-        <h2 className="text-base font-semibold text-foreground">Coverage across every asset class</h2>
-        <div className="flex flex-wrap gap-sm">
-          {CATEGORIES.map((c) => (
-            <span
-              key={c}
-              className="inline-flex items-center h-7 px-md rounded-full border border-primary bg-background-secondary text-xs text-foreground-secondary"
-            >
-              {c}
-            </span>
-          ))}
         </div>
       </section>
 

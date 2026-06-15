@@ -3,6 +3,7 @@ import { Tabs, type TabItem } from '@/components/dashboard/Tabs'
 import { ResearchCard } from '@/components/dashboard/ResearchCard'
 import { Disclaimer } from '@/components/dashboard/Disclaimer'
 import { INSIGHT_CATEGORIES, insightsByCategory } from '@/lib/insights/insights'
+import { INSIGHT_FRED } from '@/lib/sources/liveFred'
 
 export const metadata: Metadata = {
   title: 'Market Insights · Open Research',
@@ -29,6 +30,7 @@ export default function MarketInsightsPage() {
                 summary={i.summary}
                 source={i.source}
                 date={i.date}
+                live={Boolean(INSIGHT_FRED[i.slug])}
               />
             ))}
           </div>

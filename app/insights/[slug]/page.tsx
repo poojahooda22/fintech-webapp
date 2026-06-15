@@ -6,7 +6,10 @@ import { Badge } from '@/components/ui/Badge'
 import { Disclaimer } from '@/components/dashboard/Disclaimer'
 import { KeyTakeaways } from '@/components/dashboard/KeyTakeaways'
 import { SourcesList } from '@/components/dashboard/SourcesList'
+import { LiveSeriesBlock } from '@/components/dashboard/LiveSeriesBlock'
 import { getInsight, INSIGHTS } from '@/lib/insights/insights'
+import { getFredById } from '@/lib/sources/fred'
+import { INSIGHT_FRED } from '@/lib/sources/liveFred'
 
 export function generateStaticParams() {
   return INSIGHTS.map((i) => ({ slug: i.slug }))
@@ -34,6 +37,9 @@ export default async function InsightPage({
   const insight = getInsight(slug)
   if (!insight) notFound()
 
+  const fredId = INSIGHT_FRED[insight.slug]
+  const fred = fredId ? await getFredById(fredId) : null
+
   return (
     <main className="max-w-page-narrow mx-auto px-xl py-5xl flex flex-col gap-4xl">
       <Link
@@ -50,6 +56,8 @@ export default async function InsightPage({
         </h1>
         <p className="text-sm text-foreground-secondary leading-relaxed">{insight.summary}</p>
       </header>
+
+      {fred && <LiveSeriesBlock data={fred} />}
 
       {insight.keyPoints && <KeyTakeaways points={insight.keyPoints} />}
 

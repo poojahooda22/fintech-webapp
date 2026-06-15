@@ -7,7 +7,7 @@ export function AreaChart({
   points,
   id,
   className,
-  colorClass = 'text-foreground-brand',
+  colorClass = 'text-foreground-success',
 }: {
   readonly points: readonly SeriesPoint[]
   readonly id: string
@@ -42,7 +42,8 @@ export function AreaChart({
     >
       <defs>
         <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="currentColor" stopOpacity="0.2" />
+          <stop offset="0%" stopColor="currentColor" stopOpacity="0.28" />
+          <stop offset="60%" stopColor="currentColor" stopOpacity="0.08" />
           <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
         </linearGradient>
       </defs>
@@ -51,7 +52,7 @@ export function AreaChart({
         d={line}
         fill="none"
         stroke="currentColor"
-        strokeWidth={1.4}
+        strokeWidth={1.6}
         vectorEffect="non-scaling-stroke"
         strokeLinejoin="round"
         strokeLinecap="round"

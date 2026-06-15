@@ -30,7 +30,7 @@ export interface Report {
   /** Short provenance label shown on the card. */
   readonly source: string
   readonly date: string
-  /** When set, the detail page renders a live chart from this open source. */
+  /** Bespoke live charts (non-FRED). FRED-backed charts are wired in liveFred.ts. */
   readonly live?: 'fx' | 'debt'
 }
 
@@ -75,7 +75,7 @@ export const REPORTS: readonly Report[] = [
       { title: "10-Year Breakeven Inflation Rate", publisher: "Trading Economics", url: "https://tradingeconomics.com/united-states/10-year-breakeven-inflation-rate-fed-data.html" },
     ],
     source: "Advisor Perspectives",
-    date: "Jun 2026",
+    date: "Live",
   },
   {
     slug: "treasury-supply-buyer-base-stablecoin-bid-2026",
@@ -251,7 +251,7 @@ export const REPORTS: readonly Report[] = [
       { title: "Will corporates hold steady across the globe in 2026?", publisher: "Moody's Ratings", url: "https://www.moodys.com/web/en/us/creditview/blog/corporates-2026.html", date: "2026" },
     ],
     source: "FRED, Federal Reserve Bank of St. Louis",
-    date: "Jun 2026",
+    date: "Live",
   },
   {
     slug: "private-credit-first-test-leverage-liquidity",

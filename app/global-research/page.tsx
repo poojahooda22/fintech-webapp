@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Tabs, type TabItem } from '@/components/dashboard/Tabs'
 import { ResearchCard } from '@/components/dashboard/ResearchCard'
 import { CATEGORIES, reportsByCategory } from '@/lib/research/reports'
+import { REPORT_FRED } from '@/lib/sources/liveFred'
 
 export const metadata: Metadata = {
   title: 'Global Research — Open Research',
@@ -24,6 +25,7 @@ export default function GlobalResearchPage() {
             summary={r.summary}
             source={r.source}
             date={r.date}
+            live={Boolean(r.live) || Boolean(REPORT_FRED[r.slug])}
           />
         ))}
       </div>
