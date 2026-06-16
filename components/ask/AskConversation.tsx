@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState, type ChangeEvent, type ReactNode } from 'react'
 import Link from 'next/link'
-import { ArrowUp, ArrowUpRight, Plus, Mic, X, Play, Square } from 'lucide-react'
+import { ArrowUp, ArrowUpRight, Plus, Mic, X, Play, Square, ChevronDown, Check } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
+import { ASSISTANT_MODELS, DEFAULT_MODEL } from '@/lib/ai/models'
 import { cn } from '@/lib/utils'
 
 interface Source {
@@ -34,6 +35,7 @@ const STARTERS = [
 // History lives in the browser, so it survives refreshes and return visits on
 // this device. Per-account history that syncs across devices arrives with login.
 const HISTORY_KEY = 'open-research:ask-history'
+const MODEL_KEY = 'open-research:ask-model'
 
 function formatRecordTime(seconds: number): string {
   const m = Math.floor(seconds / 60)
@@ -65,6 +67,58 @@ function StaticWaveform() {
         <span key={i} className="w-0.5 rounded-full bg-foreground-muted" style={{ height: `${h}%` }} />
       ))}
     </span>
+  )
+}
+
+// Compact dropdown to choose which model answers, through the gateway.
+function ModelPicker({ value, onChange }: { readonly value: string; readonly onChange: (id: string) => void }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+  const current = ASSISTANT_MODELS.find((m) => m.id === value) ?? ASSISTANT_MODELS[0]
+  return (
+    <div ref={ref} className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-label="Choose model"
+        title="Choose model"
+        className="inline-flex items-center gap-xxs rounded-md px-sm py-1 text-xs text-foreground-muted hover:bg-background-active hover:text-foreground-secondary transition-colors cursor-pointer"
+      >
+        {current.label}
+        <ChevronDown className="h-3 w-3" />
+      </button>
+      {open && (
+        <div className="absolute bottom-[calc(100%+6px)] left-0 z-50 min-w-[11rem] rounded-lg border border-primary bg-background-secondary p-xs shadow-lg">
+          {ASSISTANT_MODELS.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => {
+                onChange(m.id)
+                setOpen(false)
+              }}
+              className={cn(
+                'flex w-full items-center justify-between gap-sm rounded-md px-sm py-1.5 text-left text-xs transition-colors cursor-pointer',
+                m.id === value
+                  ? 'bg-background-active text-foreground'
+                  : 'text-foreground-secondary hover:bg-background-secondary-hover hover:text-foreground',
+              )}
+            >
+              {m.label}
+              {m.id === value && <Check className="h-3 w-3 text-foreground-brand" />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -137,6 +191,7 @@ export function AskConversation({ compact = false }: { readonly compact?: boolea
   const [recordTime, setRecordTime] = useState(0)
   const [finalDuration, setFinalDuration] = useState(0)
   const [transcribing, setTranscribing] = useState(false)
+  const [model, setModel] = useState(DEFAULT_MODEL)
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -177,6 +232,15 @@ export function AskConversation({ compact = false }: { readonly compact?: boolea
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
   }, [turns])
 
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(MODEL_KEY)
+      if (saved && ASSISTANT_MODELS.some((m) => m.id === saved)) setModel(saved)
+    } catch {
+      /* ignore: keep the default model */
+    }
+  }, [])
+
   // Stop the mic and clear timers if the panel unmounts mid-record.
   useEffect(
     () => () => {
@@ -204,7 +268,7 @@ export function AskConversation({ compact = false }: { readonly compact?: boolea
       const res = await fetch('/api/ask', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ question, images }),
+        body: JSON.stringify({ question, images, model }),
       })
       const hdr = res.headers.get('x-sources')
       const sources: Source[] = hdr ? JSON.parse(atob(hdr)) : []
@@ -253,6 +317,15 @@ export function AskConversation({ compact = false }: { readonly compact?: boolea
 
   function removeAttachment(index: number) {
     setAttachments((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  function pickModel(id: string) {
+    setModel(id)
+    try {
+      localStorage.setItem(MODEL_KEY, id)
+    } catch {
+      /* ignore: choice just will not persist */
+    }
   }
 
   async function startRecording() {
@@ -525,62 +598,67 @@ export function AskConversation({ compact = false }: { readonly compact?: boolea
             </div>
           )}
 
-          <div className="flex items-end gap-sm px-sm py-sm">
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              aria-label="Add image"
-              title="Add image"
-              className="shrink-0 inline-flex h-7 w-7 items-center justify-center rounded-md bg-transparent text-foreground-muted hover:bg-background-active hover:text-foreground-secondary transition-transform hover:scale-105 active:scale-90 cursor-pointer"
-            >
-              <Plus className="h-4 w-4 stroke-[1.8]" />
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={onFilesPicked}
-              className="hidden"
-            />
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={
-                hasRecording
-                  ? 'Recording ready. Press send to ask.'
-                  : transcribing
-                    ? 'Transcribing your voice...'
-                    : 'Ask about markets, the economy, a report...'
-              }
-              aria-label="Ask the research"
-              disabled={isRecording || transcribing}
-              className="flex-1 min-w-0 bg-transparent border-0 outline-none text-sm text-foreground placeholder:text-foreground-muted py-1 disabled:cursor-not-allowed"
-            />
-            {showMicButton && (
+          {/* Top: the question input, full width. */}
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={
+              hasRecording
+                ? 'Recording ready. Press send to ask.'
+                : transcribing
+                  ? 'Transcribing your voice...'
+                  : 'Ask about markets, the economy, a report...'
+            }
+            aria-label="Ask the research"
+            disabled={isRecording || transcribing}
+            className="w-full bg-transparent border-0 outline-none text-sm text-foreground placeholder:text-foreground-muted px-md pt-md pb-xs disabled:cursor-not-allowed"
+          />
+
+          {/* Bottom: controls. Attach and model on the left, voice and send on the right. */}
+          <div className="flex items-center justify-between gap-sm px-sm pb-sm pt-1">
+            <div className="flex items-center gap-xs">
               <button
                 type="button"
-                onClick={startRecording}
-                aria-label="Voice input"
-                title="Voice input"
+                onClick={() => fileInputRef.current?.click()}
+                aria-label="Add image"
+                title="Add image"
                 className="shrink-0 inline-flex h-7 w-7 items-center justify-center rounded-md bg-transparent text-foreground-muted hover:bg-background-active hover:text-foreground-secondary transition-transform hover:scale-105 active:scale-90 cursor-pointer"
               >
-                <Mic className="h-4 w-4 stroke-[1.8]" />
+                <Plus className="h-4 w-4 stroke-[1.8]" />
               </button>
-            )}
-            <button
-              type="submit"
-              disabled={sendDisabled}
-              aria-label="Send"
-              className="shrink-0 inline-flex h-7 w-7 items-center justify-center rounded-lg bg-foreground text-background hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity cursor-pointer"
-            >
-              <ArrowUp className="h-4 w-4 stroke-[2]" />
-            </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={onFilesPicked}
+                className="hidden"
+              />
+              <ModelPicker value={model} onChange={pickModel} />
+            </div>
+            <div className="flex items-center gap-xs">
+              {showMicButton && (
+                <button
+                  type="button"
+                  onClick={startRecording}
+                  aria-label="Voice input"
+                  title="Voice input"
+                  className="shrink-0 inline-flex h-7 w-7 items-center justify-center rounded-md bg-transparent text-foreground-muted hover:bg-background-active hover:text-foreground-secondary transition-transform hover:scale-105 active:scale-90 cursor-pointer"
+                >
+                  <Mic className="h-4 w-4 stroke-[1.8]" />
+                </button>
+              )}
+              <button
+                type="submit"
+                disabled={sendDisabled}
+                aria-label="Send"
+                className="shrink-0 inline-flex h-7 w-7 items-center justify-center rounded-lg bg-foreground text-background hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity cursor-pointer"
+              >
+                <ArrowUp className="h-4 w-4 stroke-[2]" />
+              </button>
+            </div>
           </div>
         </div>
-        <p className="mt-xs text-xxs text-foreground-muted">
-          Educational, not financial advice. Answers come from cited research.
-        </p>
       </form>
     </div>
   )

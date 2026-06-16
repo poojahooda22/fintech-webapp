@@ -1,12 +1,15 @@
 import { groq } from '@ai-sdk/groq'
-import { streamText } from 'ai'
+import { gateway } from '@ai-sdk/gateway'
+import { streamText, type LanguageModel } from 'ai'
 import { createClient } from '@supabase/supabase-js'
 import { embedQuery } from '@/lib/ai/embedding'
 import { webSearch } from '@/lib/ai/websearch'
+import { MODEL_IDS, DEFAULT_MODEL } from '@/lib/ai/models'
 
 // The answer endpoint. On every question it searches BOTH our own cited research
-// and the live web, blends the sources, and streams a grounded, cited answer from
-// an open model on Groq. The model writes only from the numbered sources.
+// and the live web, blends the sources, and streams a grounded, cited answer.
+// Generation goes through the Vercel AI Gateway (the model the user picked) when
+// a gateway key is set; otherwise it falls back to an open model on Groq.
 
 export const runtime = 'nodejs'
 export const maxDuration = 30
@@ -65,12 +68,14 @@ async function retrieveLibrary(question: string): Promise<MatchRow[]> {
 export async function POST(req: Request) {
   let question = ''
   let images: string[] = []
+  let modelId = DEFAULT_MODEL
   try {
     const body = await req.json()
     question = typeof body?.question === 'string' ? body.question.trim() : ''
     if (Array.isArray(body?.images)) {
       images = body.images.filter((x: unknown): x is string => typeof x === 'string').slice(0, 4)
     }
+    if (typeof body?.model === 'string' && MODEL_IDS.includes(body.model)) modelId = body.model
   } catch {
     return new Response('Bad request', { status: 400 })
   }
@@ -130,12 +135,21 @@ export async function POST(req: Request) {
     ? `${base}\n\nThe user attached image(s). Look at them, describe and analyze what they show, and still cite any numbered sources you draw on.`
     : base
 
-  // 3. Stream the grounded answer. With an attached image, route to a vision
-  //    model that can actually see it; otherwise the fast text model. Sources
-  //    ride along in a header for the UI.
+  // 3. Pick the generation model. The Vercel AI Gateway needs a credit card on
+  //    file even for its free credits (it 403s without one), so it is opt-in:
+  //    used only when explicitly enabled AND keyed. Otherwise the free Groq path
+  //    answers, vision-capable when an image is attached.
+  const useGateway = process.env.USE_AI_GATEWAY === 'true' && Boolean(process.env.AI_GATEWAY_API_KEY)
+  const model: LanguageModel = useGateway
+    ? gateway(modelId)
+    : groq(hasImages ? 'meta-llama/llama-4-scout-17b-16e-instruct' : 'llama-3.3-70b-versatile')
+
+  // 4. Stream the grounded answer. Images ride as message parts; every listed
+  //    gateway model and the Groq vision fallback can read them. Sources ride
+  //    back in a header for the UI.
   const result = hasImages
     ? streamText({
-        model: groq('meta-llama/llama-4-scout-17b-16e-instruct'),
+        model,
         system: SYSTEM,
         messages: [
           {
@@ -149,7 +163,7 @@ export async function POST(req: Request) {
         temperature: 0.2,
       })
     : streamText({
-        model: groq('llama-3.3-70b-versatile'),
+        model,
         system: SYSTEM,
         prompt: userContent,
         temperature: 0.2,
