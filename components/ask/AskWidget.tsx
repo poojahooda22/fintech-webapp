@@ -2,13 +2,18 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Sparkles, X, Maximize2 } from 'lucide-react'
 import { AskConversation } from './AskConversation'
 
 // The floating Ask surface: a pinned button on every page that opens a chat
-// panel in place, with a link out to the full Ask page.
+// panel in place, with a link out to the full Ask page. It hides itself on the
+// dedicated Ask page, where the full conversation is already on screen.
 export function AskWidget() {
   const [open, setOpen] = useState(false)
+  const pathname = usePathname()
+
+  if (pathname === '/ask') return null
 
   return (
     <>
