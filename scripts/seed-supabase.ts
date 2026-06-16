@@ -43,15 +43,21 @@ const insightRows = INSIGHTS.map((i) => ({
   date: i.date,
 }))
 
-const r = await db.from('reports').upsert(reportRows, { onConflict: 'slug' })
-if (r.error) {
-  console.error('reports upsert failed:', r.error.message)
-  process.exit(1)
-}
-const ins = await db.from('insights').upsert(insightRows, { onConflict: 'slug' })
-if (ins.error) {
-  console.error('insights upsert failed:', ins.error.message)
-  process.exit(1)
+async function main() {
+  const r = await db.from('reports').upsert(reportRows, { onConflict: 'slug' })
+  if (r.error) {
+    console.error('reports upsert failed:', r.error.message)
+    process.exit(1)
+  }
+  const ins = await db.from('insights').upsert(insightRows, { onConflict: 'slug' })
+  if (ins.error) {
+    console.error('insights upsert failed:', ins.error.message)
+    process.exit(1)
+  }
+  console.log(`seeded ${reportRows.length} reports, ${insightRows.length} insights`)
 }
 
-console.log(`seeded ${reportRows.length} reports, ${insightRows.length} insights`)
+main().catch((err) => {
+  console.error(err)
+  process.exit(1)
+})
