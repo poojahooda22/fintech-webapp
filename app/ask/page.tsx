@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function AskPage() {
   return (
-    <main className="mx-auto flex h-[calc(100vh-3.5rem)] w-full max-w-page-narrow flex-col gap-xl px-xl py-3xl">
+    <main className="max-w-page  mx-auto flex h-[calc(100vh-3.5rem)] flex flex-col gap-xl px-xl py-4xl">
       <section className="flex flex-col gap-sm">
         <h1 className="text-display-sm font-semibold tracking-tight text-foreground">Ask the research</h1>
         <p className="max-w-width-xl text-sm leading-relaxed text-foreground-secondary">

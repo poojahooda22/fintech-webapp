@@ -17,9 +17,6 @@ export function TopBar() {
             <Bell className="w-4 h-4 stroke-[1.6]" />
           </button>
           <ThemeToggle />
-          <div className="w-7 h-7 rounded-full bg-background-brand text-foreground-brand flex items-center justify-center text-xs font-semibold">
-            RP
-          </div>
         </div>
       </div>
     </header>
