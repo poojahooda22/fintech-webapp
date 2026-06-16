@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { Tabs, type TabItem } from '@/components/dashboard/Tabs'
 import { ResearchCard } from '@/components/dashboard/ResearchCard'
-import { Disclaimer } from '@/components/dashboard/Disclaimer'
 import { INSIGHT_CATEGORIES } from '@/lib/insights/insights'
 import { getInsights } from '@/lib/insights/data'
 import { INSIGHT_FRED } from '@/lib/sources/liveFred'
